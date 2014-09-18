@@ -621,18 +621,21 @@ int sampleFilterOK(SFSample *sample)
   -----------------___________________________------------------
 */
 
+struct timeval tv;
+
 static void writeFlowLine(SFSample *sample)
 {
   char agentIP[51], srcIP[51], dstIP[51];
   /* source */
-  if(printf("FLOW,%s,%d,%d,",
+  if( printf("FLOW,%d.%06d,%s",
+        tv.tv_sec,
+        tv.tv_usec,
 	    printAddress(&sample->agent_addr, agentIP),
-	    sample->inputPort,
-	    sample->outputPort) < 0) {
+        ) < 0) {
     exit(-41);
   }
   /* layer 2 */
-  if(printf("%02x%02x%02x%02x%02x%02x,%02x%02x%02x%02x%02x%02x,0x%04x,%d,%d",
+  /*if(printf("%02x%02x%02x%02x%02x%02x,%02x%02x%02x%02x%02x%02x,0x%04x,%d,%d",
 	    sample->eth_src[0],
 	    sample->eth_src[1],
 	    sample->eth_src[2],
@@ -649,7 +652,7 @@ static void writeFlowLine(SFSample *sample)
 	    sample->in_vlan,
 	    sample->out_vlan) < 0) {
     exit(-42);
-  }
+  }*/
   /* layer 3/4 */
   if(printf(",%s,%s,%d,0x%02x,%d,%d,%d,0x%02x",
 	    printAddress(&sample->ipsrc, srcIP),
@@ -678,11 +681,14 @@ static void writeFlowLine(SFSample *sample)
 
 static void writeCountersLine(SFSample *sample)
 {
+  gettimeofday(&tv,NULL);
+
   /* source */
   char agentIP[51];
-  if(printf("CNTR,%s,", printAddress(&sample->agent_addr, agentIP)) < 0) {
+  if(printf("CNTR,%d.%06d,%s,", tv.tv_sec, tv.tv_usec, printAddress(&sample->agent_addr, agentIP, 50)) < 0) {
     exit(-45);
   }
+
   if(printf("%u,%u,%"PRIu64",%u,%u,%"PRIu64",%u,%u,%u,%u,%u,%u,%"PRIu64",%u,%u,%u,%u,%u,%u\n",
 	    sample->ifCounters.ifIndex,
 	    sample->ifCounters.ifType,
