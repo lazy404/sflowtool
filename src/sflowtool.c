@@ -627,12 +627,8 @@ static void writeFlowLine(SFSample *sample)
 {
   char agentIP[51], srcIP[51], dstIP[51];
   /* source */
-  if( printf("FLOW,%d.%06d,%s",
-        tv.tv_sec,
-        tv.tv_usec,
-	    printAddress(&sample->agent_addr, agentIP),
-        ) < 0) {
-    exit(-41);
+  if( printf("FLOW,%d.%06d,%s", tv.tv_sec, tv.tv_usec, printAddress(&sample->agent_addr, agentIP)) < 0) {
+      exit(-41);
   }
   /* layer 2 */
   /*if(printf("%02x%02x%02x%02x%02x%02x,%02x%02x%02x%02x%02x%02x,0x%04x,%d,%d",
@@ -685,7 +681,7 @@ static void writeCountersLine(SFSample *sample)
 
   /* source */
   char agentIP[51];
-  if(printf("CNTR,%d.%06d,%s,", tv.tv_sec, tv.tv_usec, printAddress(&sample->agent_addr, agentIP, 50)) < 0) {
+  if(printf("CNTR,%d.%06d,%s,", tv.tv_sec, tv.tv_usec, printAddress(&sample->agent_addr, agentIP)) < 0) {
     exit(-45);
   }
 
