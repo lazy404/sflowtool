@@ -435,6 +435,8 @@ static void readFlowSample(SFSample *sample, int expanded);
 static char *printTag(uint32_t tag, char *buf);
 static char *printAddress(SFLAddress *address, char *buf);
 
+struct timeval now;
+
 /*_________________---------------------------__________________
   _________________     heap allocation       __________________
   -----------------___________________________------------------
@@ -621,13 +623,11 @@ int sampleFilterOK(SFSample *sample)
   -----------------___________________________------------------
 */
 
-struct timeval tv;
-
 static void writeFlowLine(SFSample *sample)
 {
   char agentIP[51], srcIP[51], dstIP[51];
   /* source */
-  if( printf("FLOW,%d.%06d,%s", tv.tv_sec, tv.tv_usec, printAddress(&sample->agent_addr, agentIP)) < 0) {
+  if( printf("FLOW,%d.%06d,%s", now.tv_sec, now.tv_usec, printAddress(&sample->agent_addr, agentIP)) < 0) {
       exit(-41);
   }
   /* layer 2 */
@@ -677,11 +677,9 @@ static void writeFlowLine(SFSample *sample)
 
 static void writeCountersLine(SFSample *sample)
 {
-  gettimeofday(&tv,NULL);
-
   /* source */
   char agentIP[51];
-  if(printf("CNTR,%d.%06d,%s,", tv.tv_sec, tv.tv_usec, printAddress(&sample->agent_addr, agentIP)) < 0) {
+  if(printf("CNTR,%d.%06d,%s,", now.tv_sec, now.tv_usec, printAddress(&sample->agent_addr, agentIP)) < 0) {
     exit(-45);
   }
 
@@ -3710,15 +3708,15 @@ static void readCountersSample(SFSample *sample, int expanded)
   -----------------___________________________------------------
 */
 
+
 static void readSFlowDatagram(SFSample *sample)
 {
   uint32_t samplesInPacket;
-  struct timeval now;
+
   char buf[51];
-  
   /* log some datagram info */
-  now.tv_sec = (long)time(NULL);
-  now.tv_usec = 0;
+  gettimeofday(&now,NULL);
+
   sf_log(sample,"datagramSourceIP %s\n", printAddress(&sample->sourceIP, buf));
   sf_log(sample,"datagramSize %u\n", sample->rawSampleLen);
   sf_log(sample,"unixSecondsUTC %u\n", now.tv_sec);
