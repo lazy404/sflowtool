@@ -649,6 +649,8 @@ static void writeFlowLine(SFSample *sample)
 	    sample->out_vlan) < 0) {
     exit(-42);
   }*/
+ if(printf(",%d,%d", sample->in_vlan, sample->out_vlan) < 0)
+     exit(-42);
   /* layer 3/4 */
   if(printf(",%s,%s,%d,0x%02x,%d,%d,%d,0x%02x",
 	    printAddress(&sample->ipsrc, srcIP),
