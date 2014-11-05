@@ -664,12 +664,16 @@ static void writeFlowLine(SFSample *sample)
     exit(-43);
   }
   /* bytes */
-  if(printf(",%d,%d,%d\n",
+  if(printf(",%d,%d,%d,",
 	    sample->sampledPacketSize,
 	    sample->sampledPacketSize - sample->stripped - sample->offsetToIPV4,
 	    sample->meanSkipCount) < 0) {
     exit(-44);
   }
+
+  for(int i=0; i < sample->headerLen; i++)
+        printf( "%02X", sample->header[i] );
+  printf("\n");
 }
 
 /*_________________---------------------------__________________
