@@ -626,6 +626,8 @@ int sampleFilterOK(SFSample *sample)
 static void writeFlowLine(SFSample *sample)
 {
   char agentIP[51], srcIP[51], dstIP[51];
+  int i;
+
   /* source */
   if( printf("FLOW,%d.%06d,%s", now.tv_sec, now.tv_usec, printAddress(&sample->agent_addr, agentIP)) < 0) {
       exit(-41);
@@ -671,7 +673,7 @@ static void writeFlowLine(SFSample *sample)
     exit(-44);
   }
 
-  for(int i=0; i < sample->headerLen; i++)
+  for(i=0; i < sample->headerLen; i++)
         printf( "%02X", sample->header[i] );
   printf("\n");
 }
